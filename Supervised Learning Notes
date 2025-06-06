@@ -1,0 +1,13 @@
+Summary - Supervised Learning Notes
+
+| Algorithm                        | What It Does                                   | Real-World Analogy                                   | Example Use (Diabetes)                                |
+| -------------------------------- | ---------------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------- |
+| Linear Regression**            | Predicts continuous values (e.g., numbers)     | Like drawing the best fit straight line through data | Predict blood sugar level** based on age, BMI, etc. |
+| Logistic Regression**          | Predicts yes/no (classification)               | Bouncer deciding entry based on criteria             | Predict if someone is diabetic (1) or not (0)         |
+| Decision Tree**                | Makes yes/no decisions in a tree-like flow     | Like a decision-making flowchart                     | Check values step-by-step to diagnose diabetes        |
+| Random Forest**                | Combines multiple trees and votes              | Multiple doctors give opinions, majority wins        | Stronger diagnosis by combining many decision paths   |
+| SVM (Support Vector Machine) | Finds the best boundary to separate classes    | Drawing the widest street between two groups         | Clearly separates diabetic from non-diabetic cases    |
+| KNN (K-Nearest Neighbors)    | Looks at nearby examples to decide             | What are my neighbors doing? I’ll do the same        | New patient likely diabetic if nearby cases are       |
+| XGBoost                      | Builds trees sequentially, improving each time | Student correcting mistakes after each test          | Learns and improves with every new tree               |
+| LightGBM                     | Faster version of gradient boosting            | Speedy student learning efficiently                  | Fast and accurate predictions on big data             |
+| Neural Networks**              | Mimics the brain with interconnected neurons   | A brain that learns patterns from many examples      | Detects subtle signs and combinations for diabetes    |
