@@ -1,0 +1,115 @@
+ 1. K-Means Clustering
+
+from sklearn.datasets import load_iris
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load data
+data = load_iris()
+X = data.data
+
+# Apply K-Means
+kmeans = KMeans(n_clusters=3, random_state=42)
+labels = kmeans.fit_predict(X)
+
+# Reduce dimensions for visualization
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X)
+
+# Plot
+sns.scatterplot(x=X_pca[:, 0], y=X_pca[:, 1], hue=labels, palette="Set2")
+plt.title("K-Means Clustering")
+plt.show()
+ 
+2. Hierarchical Clustering (Agglomerative)
+
+from sklearn.cluster import AgglomerativeClustering
+
+# Apply Hierarchical Clustering
+agglo = AgglomerativeClustering(n_clusters=3)
+labels = agglo.fit_predict(X)
+
+# Plot
+sns.scatterplot(x=X_pca[:, 0], y=X_pca[:, 1], hue=labels, palette="Set2")
+plt.title("Hierarchical Clustering")
+plt.show()
+
+3. DBSCAN
+
+from sklearn.cluster import DBSCAN
+
+# Apply DBSCAN
+dbscan = DBSCAN(eps=0.8, min_samples=5)
+labels = dbscan.fit_predict(X)
+
+# Plot
+sns.scatterplot(x=X_pca[:, 0], y=X_pca[:, 1], hue=labels, palette="Set2")
+plt.title("DBSCAN Clustering")
+plt.show()
+
+4. Mean Shift
+
+from sklearn.cluster import MeanShift
+
+# Apply MeanShift
+meanshift = MeanShift()
+labels = meanshift.fit_predict(X)
+
+# Plot
+sns.scatterplot(x=X_pca[:, 0], y=X_pca[:, 1], hue=labels, palette="Set2")
+plt.title("Mean Shift Clustering")
+plt.show()
+
+5. PCA (Dimensionality Reduction)
+
+# Plot PCA with original labels
+sns.scatterplot(x=X_pca[:, 0], y=X_pca[:, 1], hue=data.target, palette="Set1")
+plt.title("PCA with True Labels")
+plt.show()
+
+6. t-SNE
+
+from sklearn.manifold import TSNE
+
+tsne = TSNE(n_components=2, random_state=42)
+X_tsne = tsne.fit_transform(X)
+
+sns.scatterplot(x=X_tsne[:, 0], y=X_tsne[:, 1], hue=data.target, palette="Set1")
+plt.title("t-SNE Visualization")
+plt.show()
+
+7. UMAP
+
+# You must install with: pip install umap-learn
+import umap
+
+umap_model = umap.UMAP(n_components=2, random_state=42)
+X_umap = umap_model.fit_transform(X)
+
+sns.scatterplot(x=X_umap[:, 0], y=X_umap[:, 1], hue=data.target, palette="Set1")
+plt.title("UMAP Visualization")
+plt.show()
+
+8. Isolation Forest (Anomaly Detection)
+
+from sklearn.ensemble import IsolationForest
+
+iso = IsolationForest(contamination=0.05, random_state=42)
+labels = iso.fit_predict(X)
+
+sns.scatterplot(x=X_pca[:, 0], y=X_pca[:, 1], hue=(labels == 1), palette=["red", "green"])
+plt.title("Isolation Forest (Anomaly Detection)")
+plt.show()
+
+9. One-Class SVM (Anomaly Detection)
+
+from sklearn.svm import OneClassSVM
+
+svm = OneClassSVM(nu=0.05)
+labels = svm.fit_predict(X)
+
+sns.scatterplot(x=X_pca[:, 0], y=X_pca[:, 1], hue=(labels == 1), palette=["red", "green"])
+plt.title("One-Class SVM (Anomaly Detection)")
+plt.show()
