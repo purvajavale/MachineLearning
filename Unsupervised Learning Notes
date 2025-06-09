@@ -1,0 +1,15 @@
+| Category                     | Algorithm**                 | What It Does (Simple)                                  | Common Use Case**                    | Example Dataset**            |
+| -------------------------------- | ----------------------------- | ---------------------------------------------------------- | -------------------------------------- | ------------------------------ |
+|  **Clustering**                | **K-Means**                   | Divides data into *k* groups by similarity                 | Customer segmentation                  | Iris, Mall Customers           |
+|                                  | **Hierarchical**              | Builds a tree of clusters from bottom-up                   | Document or gene similarity            | Iris, Custom text features     |
+|                                  | **DBSCAN**                    | Groups dense areas and detects noise                       | Geospatial data, fraud detection       | Blobs, GPS locations           |
+|                                  | **Mean Shift**                | Finds clusters based on data density                       | Image segmentation, object tracking    | Custom images, Iris            |
+|  **Dimensionality Reduction**  | **PCA**                       | Reduces features while keeping most variance               | Data visualization, noise reduction    | Iris, MNIST                    |
+|                                  | **t-SNE**                     | Preserves local similarities in low dimensions             | Visualizing high-dimensional data      | MNIST, word embeddings         |
+|                                  | **UMAP**                      | Similar to t-SNE but faster and preserves global structure | Embedding for NLP, gene expression     | Word2Vec, Genomics             |
+|  **Association Rule Learning** | **Apriori**                   | Finds items that frequently occur together in transactions | Market basket analysis                 | Grocery store data             |
+|                                  | **Eclat**                     | Faster alternative to Apriori using item intersection      | Retail recommendations                 | Transaction datasets           |
+|  **Anomaly Detection**         | **Isolation Forest**          | Isolates anomalies by random splits                        | Fraud detection, sensor faults         | Credit card transactions       |
+|                                  | **One-Class SVM**             | Learns boundary around "normal" data to flag anomalies     | Intrusion detection, quality control   | Network traffic, manufacturing |
+|  **Autoencoders**              | **Autoencoder (Neural)**      | Learns compressed representation and reconstructs input    | Image denoising, anomaly detection     | MNIST, ECG, Images             |
+|  **Neural Mapping**            | **SOM (Self-Organizing Map)** | Maps high-dimensional data into 2D grid                    | Visual clustering, pattern recognition | Iris, Weather data             |
