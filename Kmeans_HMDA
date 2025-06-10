@@ -1,0 +1,36 @@
+# Use Case: HMDA
+
+import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
+# Load sample data
+df = pd.read_csv("hmda_sample.csv")
+
+# Select numeric features
+features = ['Loan_Amount', 'Applicant_Income', 'Debt_To_Income_Ratio', 'Interest_Rate']
+X = df[features]
+
+# Normalize the features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Apply K-Means Clustering
+kmeans = KMeans(n_clusters=3, random_state=42)
+df['Risk_Cluster'] = kmeans.fit_predict(X_scaled)
+
+# Map Cluster to Risk Level (based on cluster centers)
+centroids = pd.DataFrame(kmeans.cluster_centers_, columns=features)
+centroids['Risk_Level'] = ['Low', 'Medium', 'High']  # Will adjust based on Loan_Amount
+
+# Order clusters based on Loan Amount or DTI for labeling
+centroids['Cluster'] = centroids.index
+sorted_centroids = centroids.sort_values(by='Debt_To_Income_Ratio')
+risk_map = dict(zip(sorted_centroids['Cluster'], ['Low', 'Medium', 'High']))
+df['Risk_Label'] = df['Risk_Cluster'].map(risk_map)
+
+# Save final result
+df.to_csv("hmda_risk_cluster_output.csv", index=False)
+
+# Show output
+print(df[['Loan_ID', 'Loan_Amount', 'Applicant_Income', 'Risk_Label']])
