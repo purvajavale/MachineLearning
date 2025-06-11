@@ -1,0 +1,239 @@
+# FuzzyMap: Intelligent Data Normalization and Clustering Engine
+
+import pandas as pd
+import difflib
+
+# --- Define mappings ---
+column_mappings = {
+    'Loan_Amount': ['la', 'loanamt', 'loan amount'],
+    'Applicant_Income': ['income', 'applicantinc'],
+    'Debt_To_Income_Ratio': ['dti', 'debt ratio'],
+    'Interest_Rate': ['intrate', 'int%'],
+    'Loan_Purpose': ['purpose', 'loanpurpose'],
+    'Loan_Type': ['type', 'loan category', 'loantype']
+}
+
+value_mappings = {
+    'Loan_Purpose': ['home purchase', 'refi', 'refinance'],
+    'Loan_Type': ['conventional', 'fha', 'va']
+}
+
+# --- Helpers ---
+def get_closest_match(word, possibilities, cutoff=0.8):
+    match = difflib.get_close_matches(str(word).lower(), possibilities, n=1, cutoff=cutoff)
+    return match[0] if match else word
+
+# --- Load Data ---
+df = pd.read_csv("hmda_messy_data.csv")  # or read from upload
+
+# --- Clean Columns ---
+all_aliases = {alias: canonical for canonical, aliases in column_mappings.items() for alias in aliases}
+df.columns = [get_closest_match(col, all_aliases.keys()) for col in df.columns]
+df.columns = [all_aliases.get(col, col) for col in df.columns]
+
+# --- Clean Multiple Columns' Data Values ---
+for col, allowed_values in value_mappings.items():
+    if col in df.columns:
+        df[col] = df[col].apply(lambda val: get_closest_match(val, allowed_values))
+
+# --- Save ---
+df.to_csv("cleaned_hmda_data.csv", index=False)
+print(df.head())
+
+ Loan_Amount   Loan_Purpose     Loan_Type
+0       200000           refi  conventional
+1       150000  home purchase           fha
+2       180000      refinance            va
+3       130000  home purchase           fha
+4       220000           refi           fha
+
+import pandas as pd
+import difflib
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+
+# Define mappings
+column_mappings = {
+    'Loan_Amount': ['la', 'loanamt', 'loan amount'],
+    'Loan_Purpose': ['purpose', 'loanpurpose'],
+    'Loan_Type': ['type', 'loantype']
+}
+value_mappings = {
+    'Loan_Purpose': ['home purchase', 'refinance'],
+    'Loan_Type': ['conventional', 'fha', 'va']
+}
+
+# Helper for fuzzy matching column names and values
+def get_closest_match(word, possibilities, cutoff=0.8):
+    matches = difflib.get_close_matches(str(word).lower(), possibilities, n=1, cutoff=cutoff)
+    return matches[0] if matches else word
+
+# Load messy data
+df = pd.read_csv('hmda_messy_data.csv')
+
+# Clean column names
+all_aliases = {alias: canonical for canonical, aliases in column_mappings.items() for alias in aliases}
+df.columns = [get_closest_match(col, all_aliases.keys()) for col in df.columns]
+df.columns = [all_aliases.get(col, col) for col in df.columns]
+
+# Clean categorical values
+for col, allowed_vals in value_mappings.items():
+    if col in df.columns:
+        df[col] = df[col].apply(lambda v: get_closest_match(v, allowed_vals))
+
+# Prepare features for K-Means
+# Encode categorical
+for col in ['Loan_Purpose', 'Loan_Type']:
+    if col in df.columns:
+        le = LabelEncoder()
+        df[col] = le.fit_transform(df[col].astype(str))
+
+# Scale numerical + encoded features
+features = ['Loan_Amount', 'Loan_Purpose', 'Loan_Type']
+X = StandardScaler().fit_transform(df[features])
+
+# K-Means clustering
+kmeans = KMeans(n_clusters=3, random_state=0)
+df['Cluster'] = kmeans.fit_predict(X)
+
+# Output results
+df.to_csv('hmda_clustered.csv', index=False)
+print(df.head())
+
+Loan_Amount  Loan_Purpose  Loan_Type  Cluster
+0       200000             0          0        1
+1       150000             1          1        0
+2       180000             2          2        2
+3       130000             1          1        0
+4       220000             0          1        1
+
+import pandas as pd
+import difflib
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+
+# Define mappings
+column_mappings = {
+    'Loan_Amount': ['la', 'loanamt', 'loan amount'],
+    'Loan_Purpose': ['purpose', 'loanpurpose'],
+    'Loan_Type': ['type', 'loantype']
+}
+value_mappings = {
+    'Loan_Purpose': ['home purchase', 'refinance'],
+    'Loan_Type': ['conventional', 'fha', 'va']
+}
+
+# Fuzzy matching helper
+def get_closest_match(word, possibilities, cutoff=0.8):
+    matches = difflib.get_close_matches(str(word).lower(), possibilities, n=1, cutoff=cutoff)
+    return matches[0] if matches else word
+
+# Load messy data
+df = pd.read_csv('hmda_messy_data.csv')
+
+# Clean column names
+all_aliases = {alias: canonical for canonical, aliases in column_mappings.items() for alias in aliases}
+df.columns = [get_closest_match(col, all_aliases.keys()) for col in df.columns]
+df.columns = [all_aliases.get(col, col) for col in df.columns]
+
+# Clean values (still in original columns)
+for col, allowed_vals in value_mappings.items():
+    if col in df.columns:
+        df[col] = df[col].apply(lambda v: get_closest_match(v, allowed_vals))
+
+# Work on a copy for clustering
+df_cluster = df.copy()
+
+# Encode categorical columns (only in df_cluster)
+for col in ['Loan_Purpose', 'Loan_Type']:
+    if col in df_cluster.columns:
+        le = LabelEncoder()
+        df_cluster[col] = le.fit_transform(df_cluster[col].astype(str))
+
+# Prepare features and scale
+features = ['Loan_Amount', 'Loan_Purpose', 'Loan_Type']
+X = StandardScaler().fit_transform(df_cluster[features])
+
+# KMeans clustering
+kmeans = KMeans(n_clusters=3, random_state=0)
+df['Cluster'] = kmeans.fit_predict(X)
+
+# Save output
+df.to_csv('hmda_clustered.csv', index=False)
+print(df.head())
+
+Loan_Amount   Loan_Purpose     Loan_Type  Cluster
+0       200000           Refi  conventional        1
+1       150000  home purchase           fha        0
+2       180000      refinance            va        2
+3       130000  home purchase           fha        0
+4       220000           Refi           fha        1
+
+import pandas as pd
+import difflib
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+
+# Define column & value mappings ---
+column_mappings = {
+    'Loan_Amount': ['la', 'loan amt', 'loanamount', 'loanamount$', 'amount'],
+    'Loan_Purpose': ['purpose', 'loanpurpose', 'reason', 'loan reason'],
+    'Loan_Type': ['type', 'loantype', 'category', 'loan category']
+}
+
+value_mappings = {
+    'Loan_Purpose': ['Refinance', 'Home Purchase'],
+    'Loan_Type': ['Conventional', 'FHA', 'VA']
+}
+
+# Helper function for fuzzy matching ---
+def get_closest_match(val, options, cutoff=0.6):
+    val = str(val).strip().lower()
+    matches = difflib.get_close_matches(val, [o.lower() for o in options], n=1, cutoff=cutoff)
+    if matches:
+        for o in options:
+            if o.lower() == matches[0]:
+                return o
+    return val  # return as-is if no match
+
+# Load messy CSV ---
+df = pd.read_csv('hmda_messy_data.csv')
+
+# Fuzzy match and rename columns ---
+all_aliases = {alias: canonical for canonical, aliases in column_mappings.items() for alias in aliases}
+df.columns = [get_closest_match(col, all_aliases.keys()) for col in df.columns]
+df.columns = [all_aliases.get(col, col) for col in df.columns]
+
+# Normalize categorical values across all mapped columns ---
+for col, allowed_vals in value_mappings.items():
+    if col in df.columns:
+        df[col] = df[col].apply(lambda val: get_closest_match(val, allowed_vals))
+
+# Create a copy for clustering prep ---
+df_cluster = df.copy()
+
+# Label encode categorical columns
+for col in value_mappings:
+    if col in df_cluster.columns:
+        le = LabelEncoder()
+        df_cluster[col] = le.fit_transform(df_cluster[col].astype(str))
+
+# Select features and scale them ---
+features = ['Loan_Amount'] + [col for col in value_mappings if col in df_cluster.columns]
+X = StandardScaler().fit_transform(df_cluster[features])
+
+# Apply KMeans ---
+kmeans = KMeans(n_clusters=3, random_state=0)
+df['Cluster'] = kmeans.fit_predict(X)
+
+# Save and Show ---
+df.to_csv('hmda_clustered.csv', index=False)
+print(df.head())
+
+  Loan_Amount   Loan_Purpose     Loan_Type  Cluster
+0       200000      Refinance  Conventional        1
+1       150000  Home Purchase           FHA        0
+2       180000      Refinance            VA        2
+3       130000  Home Purchase           FHA        0
+4       220000      Refinance           FHA        1
+
